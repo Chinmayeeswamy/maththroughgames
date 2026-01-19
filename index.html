@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Math Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3498db">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div class="container">
+    <h1>Math Lab</h1>
+    <div class="tagline">Math simplified and enjoyable</div>
+    <div class="subtitle">Learn through stories and games</div>
+
+    <select id="classSelect">
+        <option value="">Select Class</option>
+        <option value="1">Class 1</option>
+        <option value="2">Class 2</option>
+        <option value="3">Class 3</option>
+        <option value="4">Class 4</option>
+        <option value="5">Class 5</option>
+        <option value="6">Class 6</option>
+        <option value="7">Class 7</option>
+        <option value="8">Class 8</option>
+        <option value="9">Class 9</option>
+        <option value="10">Class 10</option>
+    </select>
+
+    <input type="text" id="topicInput" placeholder="Enter Topic " />
+    <button id="generateBtn" onclick="sendToWebhook()">Generate Story & Practice Problems</button>
+
+    <div class="progress-container" id="progressContainer">
+        <div class="progress-text">Generating story and games...</div>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+    </div>
+
+    <div class="output" id="outputBox"></div>
+</div>
+
+<script src="script.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js")
+            .then(() => console.log("Service Worker registered"))
+            .catch(err => console.error("Service Worker error:", err));
+    });
+}
+
+// PAYMENT LOGIC
+const PAYMENT_URL = "https://payments.cashfree.com/forms/maththroughgames";
+const urlParams = new URLSearchParams(window.location.search);
+const paymentSuccess = urlParams.get("payment") === "success";
+
+if (!localStorage.getItem("paid")) {
+    if (!paymentSuccess) {
+        // Not paid yet → redirect to Cashfree payment
+        window.location.href = PAYMENT_URL;
+    } else {
+        // Payment just succeeded → mark as paid
+        localStorage.setItem("paid", "true");
+        // Remove payment query param from URL
+        const cleanUrl = window.location.href.split("?")[0];
+        window.history.replaceState({}, document.title, cleanUrl);
+    }
+}
+</script>
+
+</body>
+</html>
